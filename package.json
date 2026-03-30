@@ -1,0 +1,26 @@
+{
+  "name": "sudo-stack-template",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "format": "biome format --write .",
+    "check": "biome check --write .",
+    "typecheck": "turbo typecheck",
+    "validate": "biome check --write . && turbo lint && turbo typecheck",
+    "db:generate": "turbo run db:generate",
+    "db:migrate": "turbo run db:migrate",
+    "db:studio": "turbo run db:studio"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.9",
+    "turbo": "latest",
+    "typescript": "^5.4.5"
+  },
+  "packageManager": "bun@1.3.9"
+}

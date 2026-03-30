@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "biomejs.biome",
+    "rphlmr.vscode-drizzle-orm",
+    "usernamehw.errorlens",
+    "github.vscode-pull-request-github",
+    "pkief.material-icon-theme",
+    "bradlc.vscode-tailwindcss",
+    "chakrounanas.turbo-console-log",
+    "anthropic.claude-code",
+    "jeronimoekerdt.color-picker-universal"
+  ]
+}

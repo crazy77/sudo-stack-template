@@ -1,0 +1,22 @@
+{
+  "name": "@sudo/api",
+  "version": "1.0.0",
+  "exports": {
+    "./router": "./src/router.ts",
+    "./client": "./src/client.ts"
+  },
+  "dependencies": {
+    "@orpc/client": "latest",
+    "@orpc/server": "latest",
+    "@sudo/db": "workspace:*",
+    "@sudo/env": "workspace:*",
+    "@sudo/validators": "workspace:*",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}
