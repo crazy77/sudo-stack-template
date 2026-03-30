@@ -15,7 +15,7 @@
     "validate": "biome check --write . && turbo lint && turbo typecheck",
     "db:generate": "turbo run db:generate",
     "db:migrate": "turbo run db:migrate",
-    "db:studio": "turbo run db:studio"
+    "db:studio": "turbo run db:studio --ui=tui"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.9",

@@ -3,13 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3006",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@orpc/client": "latest",
+    "@orpc/server": "latest",
+    "@sudo/api": "workspace:*",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.43.1",
     "@base-ui/react": "^1.3.0",
     "@hookform/resolvers": "^5.2.2",
     "class-variance-authority": "^0.7.1",

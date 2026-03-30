@@ -1,0 +1,20 @@
+{
+  "name": "@sudo/api-server",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@orpc/server": "latest",
+    "@sudo/api": "workspace:*",
+    "@supabase/supabase-js": "^2.43.1",
+    "hono": "^4"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "bun-types": "latest",
+    "typescript": "^5"
+  }
+}

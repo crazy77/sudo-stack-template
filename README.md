@@ -18,10 +18,12 @@
 | `apps/web` | Next.js 16 (App Router) | 사용자 웹 |
 | `apps/admin` | Next.js 16 (App Router) | 백오피스 어드민 |
 | `apps/mobile` | Expo 55 + React Native | iOS / Android |
+| `apps/api` | Hono + Bun | oRPC HTTP API 서버 |
 
 ### 공유 패키지
 | 패키지 | 역할 |
 |--------|------|
+| `@sudo/api` | oRPC 라우터 정의 |
 | `@sudo/db` | Drizzle ORM + Supabase 클라이언트 |
 | `@sudo/env` | T3 Env 기반 환경변수 검증 |
 | `@sudo/validators` | Zod 공유 스키마 |
@@ -70,6 +72,11 @@ NEXT_PUBLIC_SUPABASE_URL="https://xxxx.supabase.co"
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="sb_publishable_..."
 SUPABASE_SECRET_KEY="sb_secret_..."
 DATABASE_URL="postgresql://..."
+
+# API 서버
+NEXT_PUBLIC_API_URL="http://localhost:3000"
+WEB_URL="http://localhost:3006"
+ADMIN_URL="http://localhost:3001"
 ```
 
 모바일은 `apps/mobile/.env.local` 별도 생성:
@@ -77,6 +84,7 @@ DATABASE_URL="postgresql://..."
 ```bash
 EXPO_PUBLIC_SUPABASE_URL="https://xxxx.supabase.co"
 EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY="sb_publishable_..."
+EXPO_PUBLIC_API_URL="http://localhost:3000"
 ```
 
 > 키 확인 위치: Supabase 대시보드 → Settings → Data API
@@ -133,16 +141,27 @@ sudo-stack-template/
 ├── apps/
 │   ├── web/          # 사용자 웹 (Next.js App Router)
 │   ├── admin/        # 어드민 (Next.js App Router)
-│   └── mobile/       # 모바일 (Expo)
+│   ├── mobile/       # 모바일 (Expo)
+│   └── api/          # oRPC HTTP API 서버 (Hono)
 ├── packages/
+│   ├── api/          # oRPC 라우터 정의
 │   ├── db/           # DB 스키마 + 클라이언트
 │   ├── env/          # 환경변수 검증
 │   └── validators/   # 공유 Zod 스키마
 ├── doc/
-│   └── oauth/        # 소셜 로그인 설정 가이드
+│   ├── oauth/        # 소셜 로그인 설정 가이드
+│   └── orpc/         # oRPC 사용 가이드
 ├── .env.example
 └── turbo.json
 ```
+
+---
+
+## oRPC API
+
+라우터 추가, 사용 패턴, 배포 방법은 아래 문서를 참고하세요.
+
+- [oRPC 사용 가이드](./doc/orpc/README.md)
 
 ---
 

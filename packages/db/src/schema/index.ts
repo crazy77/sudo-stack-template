@@ -1,2 +1,3 @@
-export * from "./posts.js";
-export * from "./users.js";
+export * from "./managers";
+export * from "./posts";
+export * from "./users";
