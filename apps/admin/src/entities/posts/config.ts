@@ -3,7 +3,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { FileText } from "lucide-react";
 import type { EntityConfig } from "../types";
 
-const columns: ColumnDef<Post, any>[] = [
+const columns: ColumnDef<Post, unknown>[] = [
   {
     accessorKey: "id",
     header: "ID",
@@ -21,7 +21,8 @@ const columns: ColumnDef<Post, any>[] = [
   {
     accessorKey: "createdAt",
     header: "생성일",
-    cell: ({ getValue }) => new Date(getValue() as Date).toLocaleDateString("ko-KR"),
+    cell: ({ getValue }) =>
+      new Date(getValue() as Date).toLocaleDateString("ko-KR"),
   },
 ];
 

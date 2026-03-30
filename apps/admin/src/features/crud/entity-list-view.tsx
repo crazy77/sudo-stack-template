@@ -1,10 +1,11 @@
 "use client";
 
 import { postsConfig } from "@/entities/posts/config";
-import { usersConfig } from "@/entities/users/config";
 import type { EntityConfig } from "@/entities/types";
+import { usersConfig } from "@/entities/users/config";
 import { DataTable } from "./data-table";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const entityConfigs: Record<string, EntityConfig<any>> = {
   posts: postsConfig,
   users: usersConfig,
@@ -12,6 +13,7 @@ const entityConfigs: Record<string, EntityConfig<any>> = {
 
 interface EntityListViewProps {
   entity: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialData: any[];
 }
 

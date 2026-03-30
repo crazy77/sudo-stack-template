@@ -1,6 +1,6 @@
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
-import type { AppRouter } from "@sudo/api/client";
+import type { AppRouterClient } from "@sudo/api/client";
 
 import { supabase } from "./supabase";
 
@@ -13,4 +13,4 @@ const link = new RPCLink({
   },
 });
 
-export const orpc = createORPCClient<AppRouter>(link);
+export const orpc = createORPCClient<AppRouterClient>(link);

@@ -6,5 +6,5 @@ export type EntityConfig<T> = {
   label: string;
   labelPlural: string;
   icon: LucideIcon;
-  columns: ColumnDef<T, any>[];
+  columns: ColumnDef<T, unknown>[];
 };
