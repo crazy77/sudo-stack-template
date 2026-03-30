@@ -1,11 +1,11 @@
 "use client";
 
-import { navigation } from "@/config/navigation";
-import { useUIStore } from "@/stores/ui-store";
-import { cn } from "@/lib/utils";
 import { PanelLeftClose, PanelLeftOpen, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { navigation } from "@/config/navigation";
+import { cn } from "@/lib/utils";
+import { useUIStore } from "@/stores/ui-store";
 
 export function Sidebar() {
   const { sidebarCollapsed, toggleSidebar } = useUIStore();
@@ -47,7 +47,9 @@ export function Sidebar() {
               title={sidebarCollapsed ? item.label : undefined}
             >
               <Icon className="size-4 shrink-0" />
-              {!sidebarCollapsed && <span className="truncate">{item.label}</span>}
+              {!sidebarCollapsed && (
+                <span className="truncate">{item.label}</span>
+              )}
             </Link>
           );
         })}

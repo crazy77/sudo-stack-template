@@ -1,7 +1,7 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
 import { ShieldCheck } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const handleGoogleLogin = async () => {
@@ -19,7 +19,9 @@ export default function LoginPage() {
       <div className="w-full max-w-sm p-8 rounded-2xl border border-border bg-card shadow-lg flex flex-col items-center gap-6">
         <div className="flex flex-col items-center gap-2">
           <ShieldCheck className="w-10 h-10 text-primary" />
-          <h1 className="text-2xl font-bold text-foreground">SUDO Stack Admin</h1>
+          <h1 className="text-2xl font-bold text-foreground">
+            SUDO Stack Admin
+          </h1>
           <p className="text-sm text-muted-foreground text-center">
             관리자 계정으로만 접근 가능합니다
           </p>
