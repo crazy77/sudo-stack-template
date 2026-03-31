@@ -32,4 +32,21 @@ export const postsConfig: EntityConfig<Post> = {
   labelPlural: "게시글 목록",
   icon: FileText,
   columns,
+  fields: [
+    { name: "title", label: "제목", type: { kind: "text" } },
+    {
+      name: "content",
+      label: "내용",
+      type: { kind: "textarea" },
+      span: 2,
+    },
+  ],
+  listOptions: {
+    clickable: true,
+    showNewButton: true,
+  },
+  detailOptions: {
+    deletable: true,
+    editable: true,
+  },
 };

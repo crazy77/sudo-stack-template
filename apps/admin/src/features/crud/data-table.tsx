@@ -4,33 +4,82 @@ import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, ChevronsUpDown, ChevronUp } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsUpDown,
+  ChevronUp,
+} from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface DataTableProps<T> {
   columns: ColumnDef<T, unknown>[];
   data: T[];
+  onRowClick?: (row: T) => void;
+  pageSize?: number;
+  /** 서버사이드 소팅 모드 (클라이언트 소팅 비활성화) */
+  manualSorting?: boolean;
+  /** 서버사이드 페이지네이션 모드 (내장 페이지네이션 비활성화) */
+  manualPagination?: boolean;
+  /** 외부 제어 소팅 상태 */
+  sorting?: SortingState;
+  /** 소팅 변경 콜백 */
+  onSortingChange?: (sorting: SortingState) => void;
+  /** 총 데이터 수 (서버사이드일 때 표시용) */
+  totalLabel?: string;
 }
 
-export function DataTable<T>({ columns, data }: DataTableProps<T>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
+export function DataTable<T>({
+  columns,
+  data,
+  onRowClick,
+  pageSize = 20,
+  manualSorting = false,
+  manualPagination = false,
+  sorting: externalSorting,
+  onSortingChange: onExternalSortingChange,
+  totalLabel,
+}: DataTableProps<T>) {
+  const [internalSorting, setInternalSorting] = useState<SortingState>([]);
+  const sorting = externalSorting ?? internalSorting;
+  const setSorting = (
+    updater: SortingState | ((prev: SortingState) => SortingState),
+  ) => {
+    const next = typeof updater === "function" ? updater(sorting) : updater;
+    if (onExternalSortingChange) onExternalSortingChange(next);
+    else setInternalSorting(next);
+  };
 
   const table = useReactTable({
     data,
     columns,
     state: { sorting },
-    onSortingChange: setSorting,
+    onSortingChange: setSorting as never,
+    manualSorting,
+    manualPagination,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    ...(manualSorting ? {} : { getSortedRowModel: getSortedRowModel() }),
+    ...(manualPagination
+      ? {}
+      : { getPaginationRowModel: getPaginationRowModel() }),
+    initialState: {
+      pagination: { pageSize },
+    },
   });
 
+  const pageCount = table.getPageCount();
+  const currentPage = table.getState().pagination.pageIndex;
+
   return (
-    <div className="rounded-lg border border-border overflow-hidden">
+    <div className="rounded-xl border border-border overflow-hidden bg-card shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-muted/50 border-b border-border">
@@ -74,7 +123,7 @@ export function DataTable<T>({ columns, data }: DataTableProps<T>) {
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-4 py-10 text-center text-muted-foreground"
+                  className="px-4 py-16 text-center text-muted-foreground"
                 >
                   데이터가 없습니다
                 </td>
@@ -83,7 +132,11 @@ export function DataTable<T>({ columns, data }: DataTableProps<T>) {
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="hover:bg-muted/30 transition-colors"
+                  className={cn(
+                    "hover:bg-muted/30 transition-colors",
+                    onRowClick && "cursor-pointer",
+                  )}
+                  onClick={() => onRowClick?.(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="px-4 py-3">
@@ -99,9 +152,37 @@ export function DataTable<T>({ columns, data }: DataTableProps<T>) {
           </tbody>
         </table>
       </div>
-      <div className="px-4 py-2 border-t border-border bg-muted/30 text-xs text-muted-foreground">
-        총 {table.getRowModel().rows.length}개
-      </div>
+
+      {/* Footer with pagination */}
+      {!manualPagination && (
+        <div className="flex items-center justify-between px-4 py-2.5 border-t border-border bg-muted/30">
+          <span className="text-xs text-muted-foreground">
+            {totalLabel ?? `총 ${data.length}개`}
+            {pageCount > 1 && ` · ${currentPage + 1} / ${pageCount} 페이지`}
+          </span>
+
+          {pageCount > 1 && (
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <ChevronLeft className="size-3.5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                <ChevronRight className="size-3.5" />
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

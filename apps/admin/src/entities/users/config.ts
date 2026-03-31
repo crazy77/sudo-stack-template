@@ -16,7 +16,7 @@ const columns: ColumnDef<User, unknown>[] = [
   {
     accessorKey: "avatarUrl",
     header: "아바타",
-    cell: ({ getValue }) => (getValue() as string | null) ?? "없음",
+    cell: ({ getValue }) => (getValue() as string | null) ?? "—",
   },
   {
     accessorKey: "createdAt",
@@ -32,4 +32,15 @@ export const usersConfig: EntityConfig<User> = {
   labelPlural: "사용자 목록",
   icon: Users,
   columns,
+  fields: [
+    { name: "username", label: "사용자명", type: { kind: "text" } },
+    { name: "avatarUrl", label: "아바타 URL", type: { kind: "url" } },
+  ],
+  listOptions: {
+    clickable: true,
+  },
+  detailOptions: {
+    deletable: false,
+    editable: false,
+  },
 };
