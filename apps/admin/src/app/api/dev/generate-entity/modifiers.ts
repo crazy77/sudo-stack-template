@@ -27,9 +27,15 @@ function insertImportAndEntry(
   entry: string,
   errorContext: string,
 ): string {
-  // import 삽입
-  const lastImportIndex = content.lastIndexOf("import ");
-  const lastImportEnd = content.indexOf("\n", lastImportIndex);
+  // import 삽입 — 마지막 import 문의 끝(from "..." 이후 줄바꿈)을 찾음
+  const lastFromIndex = Math.max(
+    content.lastIndexOf('from "'),
+    content.lastIndexOf("from '"),
+  );
+  if (lastFromIndex === -1) {
+    throw new Error(`${errorContext}에서 import 문을 찾을 수 없습니다`);
+  }
+  const lastImportEnd = content.indexOf("\n", lastFromIndex);
   let result =
     content.slice(0, lastImportEnd + 1) +
     importLine +
@@ -38,7 +44,7 @@ function insertImportAndEntry(
 
   // 객체에 항목 삽입
   const objMatch = result.match(objectPattern);
-  if (!objMatch) {
+  if (!objMatch || objMatch.index === undefined) {
     throw new Error(`${errorContext}에서 객체 패턴을 찾을 수 없습니다`);
   }
 
@@ -48,9 +54,9 @@ function insertImportAndEntry(
     throw new Error(`${errorContext}에서 항목을 찾을 수 없습니다`);
   }
 
-  const objStart = result.indexOf(objMatch[0]) + objMatch[0].indexOf("{") + 1;
+  const objStart = objMatch.index + objMatch[0].indexOf("{") + 1;
   const insertPos = objStart + lastComma + 1;
-  result = result.slice(0, insertPos) + "\n" + entry + result.slice(insertPos);
+  result = `${result.slice(0, insertPos)}\n${entry}${result.slice(insertPos)}`;
 
   return result;
 }
@@ -154,19 +160,20 @@ export async function modifyNavigation(def: EntityDefinition): Promise<string> {
   }
 
   // 네비게이션 그룹에 항목 추가
-  const navItem = `      { id: "${def.routerKey}", label: "${def.labelSingular}", href: "/${def.slug}", icon: ${def.iconName} }`;
+  const escapedLabel = JSON.stringify(def.labelSingular).slice(1, -1);
+  const navItem = `      { id: "${def.routerKey}", label: "${escapedLabel}", href: "/${def.slug}", icon: ${def.iconName} }`;
   const groupPattern = new RegExp(
     `id:\\s*"${def.navGroupId}"[\\s\\S]*?items:\\s*\\[([\\s\\S]*?)\\]`,
   );
   const groupMatch = content.match(groupPattern);
-  if (!groupMatch) {
+  if (!groupMatch || groupMatch.index === undefined) {
     throw new Error(
       `navigation.ts에서 그룹 "${def.navGroupId}"를 찾을 수 없습니다`,
     );
   }
 
   const itemsContent = groupMatch[1];
-  const groupStart = content.indexOf(groupMatch[0]);
+  const groupStart = groupMatch.index;
   const itemsStart = groupStart + groupMatch[0].indexOf("[") + 1;
   const itemsEnd = itemsStart + itemsContent.length;
 

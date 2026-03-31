@@ -4,6 +4,7 @@ import {
   ChevronDown,
   PanelLeftClose,
   PanelLeftOpen,
+  Plus,
   ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
@@ -148,6 +149,31 @@ export function Sidebar() {
     >
       <SidebarContent collapsed={sidebarCollapsed} />
 
+      {/* Dev: 엔티티 추가 바로가기 */}
+      {process.env.NODE_ENV === "development" && (
+        <div className="border-t border-border p-2 shrink-0">
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Link
+                  href="/dev/entity-generator"
+                  className={cn(
+                    "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors",
+                    sidebarCollapsed && "justify-center px-2",
+                  )}
+                >
+                  <Plus className="size-4 shrink-0" />
+                  {!sidebarCollapsed && <span>엔티티 추가</span>}
+                </Link>
+              }
+            />
+            {sidebarCollapsed && (
+              <TooltipContent side="right">엔티티 추가</TooltipContent>
+            )}
+          </Tooltip>
+        </div>
+      )}
+
       {/* Collapse toggle */}
       <div className="border-t border-border p-2 shrink-0">
         <button
@@ -182,13 +208,7 @@ export function MobileSidebar() {
         <SheetHeader className="sr-only">
           <SheetTitle>사이드바</SheetTitle>
         </SheetHeader>
-        <div
-          className="flex h-full flex-col"
-          onClick={() => setMobileOpen(false)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") setMobileOpen(false);
-          }}
-        >
+        <div className="flex h-full flex-col">
           <SidebarContent collapsed={false} />
         </div>
       </SheetContent>

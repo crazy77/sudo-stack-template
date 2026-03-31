@@ -10,7 +10,7 @@ import {
   modifyNavigation,
   modifySchemaIndex,
 } from "./modifiers";
-import { entityDefinitionSchema } from "./schema";
+import { type EntityDefinition, entityDefinitionSchema } from "./schema";
 import {
   generateDetailPage,
   generateDrizzleSchema,
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
   }
 
   // 2. 입력 파싱 + 검증
-  let def;
+  let def: EntityDefinition;
   try {
     const body = await request.json();
     def = entityDefinitionSchema.parse(body);

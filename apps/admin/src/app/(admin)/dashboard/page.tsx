@@ -1,4 +1,5 @@
 import { FileText, LayoutDashboard, TrendingUp, Users } from "lucide-react";
+import Link from "next/link";
 import { PageContainer } from "@/components/admin-ui/page-container";
 import { PageHeader } from "@/components/admin-ui/page-header";
 import { SectionCard } from "@/components/admin-ui/section-card";
@@ -53,20 +54,20 @@ export default async function DashboardPage() {
         </SectionCard>
         <SectionCard title="빠른 링크">
           <div className="space-y-2">
-            <a
+            <Link
               href="/users"
               className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-muted transition-colors"
             >
               <Users className="size-4 text-muted-foreground" />
               사용자 관리
-            </a>
-            <a
+            </Link>
+            <Link
               href="/posts"
               className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-muted transition-colors"
             >
               <FileText className="size-4 text-muted-foreground" />
               게시글 관리
-            </a>
+            </Link>
           </div>
         </SectionCard>
       </div>

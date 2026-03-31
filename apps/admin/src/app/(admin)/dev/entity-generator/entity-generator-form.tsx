@@ -299,12 +299,10 @@ export function EntityGeneratorForm() {
             <CheckboxField
               label="새로 만들기 버튼 표시"
               {...form.register("listOptions.showNewButton")}
-              defaultChecked={defaultValues.listOptions.showNewButton}
             />
             <CheckboxField
               label="행 클릭 시 상세 이동"
               {...form.register("listOptions.clickable")}
-              defaultChecked={defaultValues.listOptions.clickable}
             />
           </div>
         </SectionCard>
@@ -313,12 +311,10 @@ export function EntityGeneratorForm() {
             <CheckboxField
               label="삭제 가능"
               {...form.register("detailOptions.deletable")}
-              defaultChecked={defaultValues.detailOptions.deletable}
             />
             <CheckboxField
               label="수정 가능"
               {...form.register("detailOptions.editable")}
-              defaultChecked={defaultValues.detailOptions.editable}
             />
           </div>
         </SectionCard>

@@ -1,5 +1,60 @@
 import { z } from "zod";
 
+// --- Constants (스키마에서 참조하므로 상단 배치) ---
+
+/** 자주 쓰는 Lucide 아이콘 목록 */
+export const COMMON_ICONS = [
+  "Activity",
+  "AlertCircle",
+  "Archive",
+  "BarChart",
+  "Bell",
+  "Bookmark",
+  "BookOpen",
+  "Calendar",
+  "CheckCircle",
+  "Clipboard",
+  "Clock",
+  "CreditCard",
+  "Database",
+  "FileText",
+  "Flag",
+  "Folder",
+  "Globe",
+  "Grid",
+  "Heart",
+  "Image",
+  "Layers",
+  "Link",
+  "List",
+  "Lock",
+  "Mail",
+  "MapPin",
+  "Megaphone",
+  "MessageSquare",
+  "Package",
+  "Phone",
+  "PieChart",
+  "Settings",
+  "Shield",
+  "ShoppingCart",
+  "Star",
+  "Tag",
+  "TrendingUp",
+  "Users",
+  "Wrench",
+  "Zap",
+] as const;
+
+/** 네비게이션 그룹 옵션 */
+export const NAV_GROUPS = [
+  { value: "main", label: "메인" },
+  { value: "content", label: "콘텐츠" },
+  { value: "system", label: "시스템" },
+] as const;
+
+const NAV_GROUP_IDS = NAV_GROUPS.map((g) => g.value) as [string, ...string[]];
+
 // --- Zod Schemas ---
 
 export const selectOptionSchema = z.object({
@@ -87,10 +142,16 @@ export const entityDefinitionSchema = z.object({
     .min(1)
     .regex(/^[a-z][a-z0-9-]*$/, "kebab-case 형식이어야 합니다")
     .refine((s: string) => !RESERVED_SLUGS.includes(s), "예약된 slug입니다"),
-  labelSingular: z.string().min(1),
-  labelPlural: z.string().min(1),
-  iconName: z.string().min(1),
-  navGroupId: z.string().min(1),
+  labelSingular: z
+    .string()
+    .min(1)
+    .regex(/^[^"'`\\]+$/, "따옴표, 백슬래시를 포함할 수 없습니다"),
+  labelPlural: z
+    .string()
+    .min(1)
+    .regex(/^[^"'`\\]+$/, "따옴표, 백슬래시를 포함할 수 없습니다"),
+  iconName: z.enum(COMMON_ICONS),
+  navGroupId: z.enum(NAV_GROUP_IDS),
   fields: z
     .array(fieldDefinitionSchema)
     .min(1, "최소 1개의 필드가 필요합니다")
@@ -116,7 +177,7 @@ export type SelectOption = z.infer<typeof selectOptionSchema>;
 export type FieldDefinition = z.infer<typeof fieldDefinitionSchema>;
 export type EntityDefinition = z.infer<typeof entityDefinitionSchema>;
 
-// --- Constants ---
+// --- Lookup Constants ---
 
 /** drizzleType → 기본 fieldKind 매핑 */
 export const DRIZZLE_TO_FIELD_KIND: Record<
@@ -153,54 +214,3 @@ export const DRIZZLE_TO_ZOD: Record<FieldDefinition["drizzleType"], string> = {
   uuid: "z.string().uuid()",
   json: "z.unknown()",
 };
-
-/** 자주 쓰는 Lucide 아이콘 목록 */
-export const COMMON_ICONS = [
-  "Activity",
-  "AlertCircle",
-  "Archive",
-  "BarChart",
-  "Bell",
-  "Bookmark",
-  "BookOpen",
-  "Calendar",
-  "CheckCircle",
-  "Clipboard",
-  "Clock",
-  "CreditCard",
-  "Database",
-  "FileText",
-  "Flag",
-  "Folder",
-  "Globe",
-  "Grid",
-  "Heart",
-  "Image",
-  "Layers",
-  "Link",
-  "List",
-  "Lock",
-  "Mail",
-  "MapPin",
-  "Megaphone",
-  "MessageSquare",
-  "Package",
-  "Phone",
-  "PieChart",
-  "Settings",
-  "Shield",
-  "ShoppingCart",
-  "Star",
-  "Tag",
-  "TrendingUp",
-  "Users",
-  "Wrench",
-  "Zap",
-] as const;
-
-/** 네비게이션 그룹 옵션 (navigation.ts에서 파생) */
-import { navigation } from "@/config/navigation";
-export const NAV_GROUPS = navigation.map((g) => ({
-  value: g.id,
-  label: g.heading,
-}));
