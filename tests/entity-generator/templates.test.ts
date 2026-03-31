@@ -85,7 +85,7 @@ describe("generateORPCRouter", () => {
   it("CRUD 라우터를 생성한다", () => {
     const result = generateORPCRouter(baseDef);
 
-    expect(result).toContain("export const announcementsRouter = os.router({");
+    expect(result).toContain("export const announcementsRouter = managersOnly.router({");
     expect(result).toContain("list:");
     expect(result).toContain("getById:");
     expect(result).toContain("create:");

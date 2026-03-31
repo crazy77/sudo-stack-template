@@ -15,7 +15,7 @@ export function buildFormSchema(
 function fieldToZod(field: FieldConfig): z.ZodTypeAny {
   switch (field.type.kind) {
     case "number":
-      return z.number().finite();
+      return z.coerce.number().finite();
     case "checkbox":
       return z.boolean().default(false);
     case "date":
