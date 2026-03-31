@@ -63,9 +63,7 @@ describe("modifySchemaIndex", () => {
     const { modifySchemaIndex } = await import(
       "@/app/api/dev/generate-entity/modifiers"
     );
-    await expect(modifySchemaIndex("announcements")).rejects.toThrow(
-      "이미",
-    );
+    await expect(modifySchemaIndex("announcements")).rejects.toThrow("이미");
   });
 });
 
@@ -141,6 +139,7 @@ export const navigation = [
       fields: [],
       listOptions: { showNewButton: true, clickable: true },
       detailOptions: { deletable: true, editable: true },
+      authLevel: "managersOnly",
     } as any);
 
     const content = await fs.readFile(

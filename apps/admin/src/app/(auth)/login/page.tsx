@@ -1,9 +1,13 @@
 "use client";
 
 import { ShieldCheck } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
+  const error = searchParams.get("error");
+
   const handleGoogleLogin = async () => {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
@@ -26,6 +30,14 @@ export default function LoginPage() {
             관리자 계정으로만 접근 가능합니다
           </p>
         </div>
+
+        {error && (
+          <div className="w-full rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive text-center">
+            {error === "missing_code"
+              ? "인증 코드가 누락되었습니다."
+              : `로그인에 실패했습니다: ${decodeURIComponent(error)}`}
+          </div>
+        )}
 
         <button
           type="button"

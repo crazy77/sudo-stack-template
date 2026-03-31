@@ -63,6 +63,7 @@
         "@sudo/api": "workspace:*",
         "@supabase/supabase-js": "^2.43.1",
         "hono": "^4",
+        "zod": "^3.23.8",
       },
       "devDependencies": {
         "@types/node": "^20",
@@ -176,6 +177,7 @@
         "@sudo/db": "workspace:*",
         "@sudo/env": "workspace:*",
         "@sudo/validators": "workspace:*",
+        "drizzle-orm": "^0.45.2",
         "zod": "^3.23.8",
       },
       "devDependencies": {

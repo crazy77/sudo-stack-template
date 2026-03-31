@@ -11,6 +11,7 @@ export default async function DashboardPage() {
 
   let userCount = 0;
   let postCount = 0;
+  let loadError = false;
 
   try {
     const [users, posts] = await Promise.all([
@@ -20,7 +21,7 @@ export default async function DashboardPage() {
     userCount = users.length;
     postCount = posts.length;
   } catch {
-    // API 연결 실패 시 0으로 표시
+    loadError = true;
   }
 
   return (
@@ -30,6 +31,12 @@ export default async function DashboardPage() {
         title="대시보드"
         description="서비스 현황을 한눈에 확인하세요."
       />
+
+      {loadError && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          데이터를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard

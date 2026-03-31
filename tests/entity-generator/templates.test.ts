@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { EntityDefinition } from "@/app/api/dev/generate-entity/schema";
 import {
+  generateDetailPage,
   generateDrizzleSchema,
   generateEntityConfig,
-  generateORPCRouter,
   generateListPage,
-  generateDetailPage,
+  generateORPCRouter,
 } from "@/app/api/dev/generate-entity/templates";
 
 const baseDef: EntityDefinition = {
@@ -49,6 +49,7 @@ const baseDef: EntityDefinition = {
   ],
   listOptions: { showNewButton: true, clickable: true },
   detailOptions: { deletable: true, editable: true },
+  authLevel: "managersOnly" as const,
 };
 
 describe("generateDrizzleSchema", () => {
@@ -73,7 +74,9 @@ describe("generateDrizzleSchema", () => {
 
   it("필드의 drizzleType에 맞는 import를 생성한다", () => {
     const result = generateDrizzleSchema(baseDef);
-    expect(result).toMatch(/import \{.*boolean.*\} from "drizzle-orm\/pg-core"/);
+    expect(result).toMatch(
+      /import \{.*boolean.*\} from "drizzle-orm\/pg-core"/,
+    );
     expect(result).toMatch(/import \{.*text.*\} from "drizzle-orm\/pg-core"/);
   });
 });

@@ -10,15 +10,14 @@ export default async function PostDetailPage({
 }) {
   const { id } = await params;
   const client = await createServerClient();
-  const posts = await client.posts.list();
-  const post = posts.find((p: { id: string }) => p.id === id);
+  const item = await client.posts.getById({ id });
 
-  if (!post) notFound();
+  if (!item) notFound();
 
   return (
     <EntityDetailView
       config={postsConfig}
-      data={post as unknown as Record<string, unknown>}
+      data={item as unknown as Record<string, unknown>}
     />
   );
 }

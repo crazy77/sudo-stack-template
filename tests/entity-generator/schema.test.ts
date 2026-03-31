@@ -31,6 +31,7 @@ const validEntity = {
   fields: [validField],
   listOptions: { showNewButton: true, clickable: true },
   detailOptions: { deletable: true, editable: true },
+  authLevel: "managersOnly" as const,
 };
 
 describe("entityDefinitionSchema", () => {

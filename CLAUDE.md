@@ -60,11 +60,25 @@ packages/
 4. `apps/admin/src/config/navigation.ts` 에 네비 항목 추가
 5. `apps/admin/src/app/(admin)/` 에 페이지 컴포넌트 작성
 
+## 인증/인가
+
+- **인증**: Supabase Auth (Google OAuth)
+- **미들웨어 계층** (`packages/api/src/middlewares/auth.ts`):
+  - `pub` — 인증 불필요
+  - `authed` — 로그인한 사용자 (userId 필수)
+  - `managersOnly` — managers 테이블 등록자 (managerRole 포함)
+- **엔티티별 CUD 인가 옵션**:
+  - `managersOnly` — 관리자만 생성/수정/삭제
+  - `ownerOnly` — 본인 작성만 수정/삭제 (핸들러 내부 체크)
+  - `authed` — 인증된 누구나
+
 ## 어드민 CRUD 프레임워크
 
 - `EntityConfig` (`entities/types.ts`): 엔티티별 컬럼, 필드, 옵션 설정
 - `EntityListView` (`features/crud/`): 서버사이드 페이지네이션, 검색, 필터
-- `EntityDetailView` (`features/crud/`): 상세/수정/삭제 뷰
+- `EntityDetailView` (`features/crud/`): 상세 조회 + 인라인 수정/삭제
+- `EntityCreateView` (`features/crud/`): 동적 폼 기반 생성
+- 동적 폼 헬퍼: `build-form-schema.ts`, `entity-form-field.tsx`, `use-entity-actions.ts`
 - 공통 UI: `components/admin-ui/` (PageContainer, PageHeader, SectionCard 등)
 
 ## dev-only 도구

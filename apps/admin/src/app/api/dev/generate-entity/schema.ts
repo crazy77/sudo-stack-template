@@ -169,6 +169,7 @@ export const entityDefinitionSchema = z.object({
     deletable: z.boolean(),
     editable: z.boolean(),
   }),
+  authLevel: z.enum(["managersOnly", "ownerOnly", "authed"]),
 });
 
 // --- TypeScript Types ---

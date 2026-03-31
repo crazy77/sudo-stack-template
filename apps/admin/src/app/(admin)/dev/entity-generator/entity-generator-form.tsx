@@ -82,6 +82,7 @@ const defaultValues: EntityDefinition = {
   ],
   listOptions: { showNewButton: true, clickable: true },
   detailOptions: { deletable: true, editable: true },
+  authLevel: "managersOnly",
 };
 
 type GenerateResult = {

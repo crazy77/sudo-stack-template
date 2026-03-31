@@ -10,15 +10,14 @@ export default async function UserDetailPage({
 }) {
   const { id } = await params;
   const client = await createServerClient();
-  const users = await client.users.list();
-  const user = users.find((u: { id: string }) => u.id === id);
+  const item = await client.users.getById({ id });
 
-  if (!user) notFound();
+  if (!item) notFound();
 
   return (
     <EntityDetailView
       config={usersConfig}
-      data={user as unknown as Record<string, unknown>}
+      data={item as unknown as Record<string, unknown>}
     />
   );
 }
