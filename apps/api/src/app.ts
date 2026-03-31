@@ -15,6 +15,11 @@ const apiEnv = z
   })
   .parse(process.env);
 
+const supabase = createClient(
+  apiEnv.NEXT_PUBLIC_SUPABASE_URL,
+  apiEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+);
+
 const rpcHandler = new RPCHandler(appRouter);
 
 const app = new Hono();
@@ -42,10 +47,6 @@ app.use("/rpc/*", async (c, next) => {
   const authHeader = c.req.header("Authorization");
   if (authHeader?.startsWith("Bearer ")) {
     const token = authHeader.slice(7);
-    const supabase = createClient(
-      apiEnv.NEXT_PUBLIC_SUPABASE_URL,
-      apiEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-    );
     const { data } = await supabase.auth.getUser(token);
     userId = data.user?.id;
   }
@@ -60,6 +61,11 @@ app.use("/rpc/*", async (c, next) => {
   }
 
   await next();
+});
+
+app.onError((err, c) => {
+  console.error(`[API Error] ${c.req.method} ${c.req.path}:`, err);
+  return c.json({ error: "Internal Server Error" }, { status: 500 });
 });
 
 export default app;

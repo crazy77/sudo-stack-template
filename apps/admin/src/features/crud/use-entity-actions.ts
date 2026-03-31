@@ -6,15 +6,38 @@ type EntityActions = {
   create: (data: Record<string, unknown>) => Promise<unknown>;
 };
 
-const actionsMap: Record<string, Partial<EntityActions>> = {
-  posts: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    update: (id, data) => (orpc.posts.update as any)({ id, ...data }),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    delete: (id) => (orpc.posts.delete as any)({ id }),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    create: (data) => (orpc.posts.create as any)(data),
+function createActions(
+  router: {
+    update?: (input: Record<string, unknown>) => Promise<unknown>;
+    delete?: (input: { id: string }) => Promise<unknown>;
+    create?: (input: Record<string, unknown>) => Promise<unknown>;
   },
+  options?: { hasUpdate?: boolean; hasDelete?: boolean; hasCreate?: boolean },
+): Partial<EntityActions> {
+  const actions: Partial<EntityActions> = {};
+  if (options?.hasUpdate !== false && router.update) {
+    const fn = router.update;
+    actions.update = (id, data) => fn({ id, ...data });
+  }
+  if (options?.hasDelete !== false && router.delete) {
+    const fn = router.delete;
+    actions.delete = (id) => fn({ id });
+  }
+  if (options?.hasCreate !== false && router.create) {
+    const fn = router.create;
+    actions.create = (data) => fn(data);
+  }
+  return actions;
+}
+
+const actionsMap: Record<string, Partial<EntityActions>> = {
+  posts: createActions(
+    orpc.posts as unknown as {
+      update: (input: Record<string, unknown>) => Promise<unknown>;
+      delete: (input: { id: string }) => Promise<unknown>;
+      create: (input: Record<string, unknown>) => Promise<unknown>;
+    },
+  ),
 };
 
 export function getEntityActions(slug: string): Partial<EntityActions> {

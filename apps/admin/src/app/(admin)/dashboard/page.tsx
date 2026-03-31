@@ -41,12 +41,12 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="전체 사용자"
-          value={userCount.toLocaleString()}
+          value={loadError ? "—" : userCount.toLocaleString()}
           icon={Users}
         />
         <StatCard
           label="전체 게시글"
-          value={postCount.toLocaleString()}
+          value={loadError ? "—" : postCount.toLocaleString()}
           icon={FileText}
         />
         <StatCard label="오늘 방문" value="—" icon={TrendingUp} />

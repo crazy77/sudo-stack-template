@@ -2,9 +2,24 @@
 
 import { ShieldCheck } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
 
+const errorMessages: Record<string, string> = {
+  missing_code: "인증 코드가 누락되었습니다.",
+  auth_failed: "인증에 실패했습니다. 다시 시도해주세요.",
+  access_denied: "접근이 거부되었습니다.",
+};
+
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginContent />
+    </Suspense>
+  );
+}
+
+function LoginContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
 
@@ -32,10 +47,11 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <div className="w-full rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive text-center">
-            {error === "missing_code"
-              ? "인증 코드가 누락되었습니다."
-              : `로그인에 실패했습니다: ${decodeURIComponent(error)}`}
+          <div
+            role="alert"
+            className="w-full rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive text-center"
+          >
+            {errorMessages[error] ?? "로그인에 실패했습니다."}
           </div>
         )}
 

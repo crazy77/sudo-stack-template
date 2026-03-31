@@ -26,6 +26,7 @@ export function EntityDetailView({ config, data }: EntityDetailViewProps) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const actions = getEntityActions(config.slug);
   const editable = config.detailOptions?.editable && !!actions.update;
@@ -60,8 +61,6 @@ export function EntityDetailView({ config, data }: EntityDetailViewProps) {
 
   const onDelete = async () => {
     if (!actions.delete) return;
-    if (!window.confirm(`이 ${config.label}을(를) 삭제하시겠습니까?`)) return;
-
     setIsDeleting(true);
     try {
       await actions.delete(data.id as string);
@@ -70,6 +69,7 @@ export function EntityDetailView({ config, data }: EntityDetailViewProps) {
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "삭제에 실패했습니다");
       setIsDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -102,6 +102,13 @@ export function EntityDetailView({ config, data }: EntityDetailViewProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => {
+                  if (
+                    form.formState.isDirty &&
+                    !window.confirm(
+                      "저장하지 않은 변경사항이 있습니다. 취소하시겠습니까?",
+                    )
+                  )
+                    return;
                   setIsEditing(false);
                   form.reset();
                 }}
@@ -119,17 +126,37 @@ export function EntityDetailView({ config, data }: EntityDetailViewProps) {
               </Button>
             </>
           )}
-          {deletable && !isEditing && (
+          {deletable && !isEditing && !showDeleteConfirm && (
             <Button
-              variant="outline"
+              variant="destructive"
               size="sm"
-              onClick={onDelete}
-              disabled={isDeleting}
-              className="text-destructive hover:text-destructive"
+              onClick={() => setShowDeleteConfirm(true)}
             >
               <Trash2 className="size-3.5" />
-              {isDeleting ? "삭제 중..." : "삭제"}
+              삭제
             </Button>
+          )}
+          {showDeleteConfirm && (
+            <>
+              <span className="text-xs text-destructive">
+                정말 삭제하시겠습니까?
+              </span>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={onDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "삭제 중..." : "확인"}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowDeleteConfirm(false)}
+              >
+                취소
+              </Button>
+            </>
           )}
         </div>
       </div>

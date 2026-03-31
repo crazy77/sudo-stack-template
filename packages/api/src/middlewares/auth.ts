@@ -17,16 +17,31 @@ export const authed = pub.use(async ({ context, next }) => {
   return next({ context: { ...context, userId: context.userId } });
 });
 
+/** 요청 단위 매니저 조회 캐시 */
+const managerCache = new Map<string, { role: string; expiresAt: number }>();
+const CACHE_TTL = 60_000; // 1분
+
 /** managers 테이블 등록자만 접근 가능 */
 export const managersOnly = authed.use(async ({ context, next }) => {
+  const cached = managerCache.get(context.userId);
+  if (cached && cached.expiresAt > Date.now()) {
+    return next({ context: { ...context, managerRole: cached.role } });
+  }
+
   const [manager] = await db
     .select({ role: managers.role })
     .from(managers)
     .where(eq(managers.id, context.userId))
     .limit(1);
 
-  if (!manager)
+  if (!manager) {
+    managerCache.delete(context.userId);
     throw new ORPCError("FORBIDDEN", { message: "Manager access required" });
+  }
 
+  managerCache.set(context.userId, {
+    role: manager.role,
+    expiresAt: Date.now() + CACHE_TTL,
+  });
   return next({ context: { ...context, managerRole: manager.role } });
 });

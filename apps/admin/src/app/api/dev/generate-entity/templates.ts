@@ -107,15 +107,22 @@ ${filterableFields
       }`
       : "";
 
-  return `import { os } from "@orpc/server";
+  const authImport =
+    def.authLevel === "managersOnly"
+      ? `import { managersOnly } from "../middlewares/auth";`
+      : `import { authed } from "../middlewares/auth";`;
+  const base = def.authLevel === "managersOnly" ? "managersOnly" : "authed";
+
+  return `import { ORPCError } from "@orpc/server";
 import { ${uniqueImports.join(", ")} } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import { db } from "@sudo/db/client";
 import { ${def.tableName} } from "@sudo/db/schema";
 import { z } from "zod";
+${authImport}
 
-export const ${def.routerKey}Router = os.router({
-  list: os
+export const ${def.routerKey}Router = ${base}.router({
+  list: ${base}
     .input(
       z.object({
         limit: z.number().min(1).max(100).default(20),
@@ -134,7 +141,7 @@ ${filterZodFields.join("\n")}
         }
       })
     )
-    .handler(async ({ input }) => {
+    .handler(async ({ input${def.authLevel === "ownerOnly" ? ", context" : ""} }) => {
       const { limit, cursor, sortBy, sortOrder, search${filterableFields.length > 0 ? ", filters" : ""} } = input;
       const conditions: SQL[] = [];
 
@@ -162,7 +169,7 @@ ${searchCondition}${filterConditions}
       return { data, nextCursor, hasMore };
     }),
 
-  getById: os
+  getById: ${base}
     .input(z.object({ id: z.string().uuid() }))
     .handler(async ({ input }) => {
       const [item] = await db
@@ -173,13 +180,13 @@ ${searchCondition}${filterConditions}
       return item ?? null;
     }),
 
-  create: os
+  create: ${base}
     .input(
       z.object({
 ${createFields.join("\n")}
       })
     )
-    .handler(async ({ input }) => {
+    .handler(async ({ input${def.authLevel === "ownerOnly" ? ", context" : ""} }) => {
       const [created] = await db
         .insert(${def.tableName})
         .values(input)
@@ -187,29 +194,49 @@ ${createFields.join("\n")}
       return created;
     }),
 
-  update: os
+  update: ${base}
     .input(
       z.object({
         id: z.string().uuid(),
 ${updateFields.join("\n")}
       })
     )
-    .handler(async ({ input }) => {
+    .handler(async ({ input${def.authLevel === "ownerOnly" ? ", context" : ""} }) => {
       const { id, ...data } = input;
+${
+  def.authLevel === "ownerOnly"
+    ? `      // ownerOnly: 단일 쿼리로 소유권 검증 + 업데이트
       const [updated] = await db
+        .update(${def.tableName})
+        .set(data)
+        .where(and(eq(${def.tableName}.id, id), eq(${def.tableName}.authorId, context.userId)))
+        .returning();
+      if (!updated) throw new ORPCError("FORBIDDEN", { message: "본인 작성 항목만 수정할 수 있습니다" });`
+    : `      const [updated] = await db
         .update(${def.tableName})
         .set(data)
         .where(eq(${def.tableName}.id, id))
         .returning();
+      if (!updated) throw new ORPCError("NOT_FOUND", { message: "항목을 찾을 수 없습니다" });`
+}
       return updated;
     }),
 
-  delete: os
+  delete: ${base}
     .input(z.object({ id: z.string().uuid() }))
-    .handler(async ({ input }) => {
-      await db
+    .handler(async ({ input${def.authLevel === "ownerOnly" ? ", context" : ""} }) => {
+${
+  def.authLevel === "ownerOnly"
+    ? `      // ownerOnly: 단일 쿼리로 소유권 검증 + 삭제
+      const deleted = await db
         .delete(${def.tableName})
-        .where(eq(${def.tableName}.id, input.id));
+        .where(and(eq(${def.tableName}.id, input.id), eq(${def.tableName}.authorId, context.userId)))
+        .returning({ id: ${def.tableName}.id });
+      if (deleted.length === 0) throw new ORPCError("FORBIDDEN", { message: "본인 작성 항목만 삭제할 수 있습니다" });`
+    : `      await db
+        .delete(${def.tableName})
+        .where(eq(${def.tableName}.id, input.id));`
+}
       return { success: true };
     }),
 });
