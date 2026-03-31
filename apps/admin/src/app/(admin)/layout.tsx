@@ -4,7 +4,8 @@ import { eq } from "drizzle-orm";
 import { ShieldAlert } from "lucide-react";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
-import { Sidebar } from "@/components/sidebar";
+import { MobileSidebar, Sidebar } from "@/components/sidebar";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AdminLayout({
@@ -30,11 +31,13 @@ export default async function AdminLayout({
   if (!manager) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background">
-        <ShieldAlert className="w-12 h-12 text-muted-foreground" />
+        <div className="flex size-16 items-center justify-center rounded-full bg-muted">
+          <ShieldAlert className="size-7 text-muted-foreground" />
+        </div>
         <h2 className="text-lg font-semibold text-foreground">
           접근 권한 없음
         </h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground text-center max-w-xs">
           관리자 계정이 아닙니다. 최고 관리자에게 문의하세요.
         </p>
         <a
@@ -48,12 +51,15 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <Sidebar />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <Header />
-        <main className="flex-1 overflow-auto p-6">{children}</main>
+    <TooltipProvider>
+      <div className="flex h-screen overflow-hidden bg-background">
+        <Sidebar />
+        <MobileSidebar />
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <Header userEmail={manager.email} userName={manager.name} />
+          <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
